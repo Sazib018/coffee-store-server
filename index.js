@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require("dotenv").config();
@@ -27,21 +27,34 @@ async function run() {
     await client.connect();
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-    const coffeeCollections = client.db("coffee_store").collection("coffee");
+    const coffeeInfoCollections = client.db("coffee_store").collection("coffee");
 
 
     app.get('/coffee', async (req, res) => {
-      const result = await coffeeCollections.find().toArray();
+      const result = await coffeeInfoCollections.find().toArray();
       res.send(result);
     });
 
-
-    app.post('/coffee', async(req, res)=>{
-      const data = req.body;
-      const result = await coffeeCollections.insertOne(data);
+    app.get("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await coffeeInfoCollections.findOne(query)
       res.send(result)
-  })
-  
+    })
+
+    app.delete('/coffee/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await coffeeInfoCollections.deleteOne(query)
+      res.send(result)
+    })
+
+    app.post('/coffee', async (req, res) => {
+      const data = req.body;
+      const result = await coffeeInfoCollections.insertOne(data);
+      res.send(result)
+    })
+
 
   } catch (error) {
     console.error("MongoDB Connection Error:", error);
