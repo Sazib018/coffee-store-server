@@ -55,6 +55,25 @@ async function run() {
       res.send(result)
     })
 
+    app.patch("/update_coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const coffeeUpdate = req.body;
+      const query = { _id: new ObjectId(id) }
+      
+      const doc = {
+        name: coffeeUpdate.name,
+        chef:  coffeeUpdate.chef,
+        supplier: coffeeUpdate.supplier,
+        details: coffeeUpdate.details,
+        teste: coffeeUpdate.teste,
+        category: coffeeUpdate.category,
+        photo_url: coffeeUpdate.photo_url,
+        price: coffeeUpdate.price
+      }
+      const UpdateDoc = await coffeeInfoCollections.updateOne(query, doc)
+      res.send(UpdateDoc)
+    })
+
 
   } catch (error) {
     console.error("MongoDB Connection Error:", error);
