@@ -59,19 +59,21 @@ async function run() {
       const id = req.params.id;
       const coffeeUpdate = req.body;
       const query = { _id: new ObjectId(id) }
-      
+
       const doc = {
-        name: coffeeUpdate.name,
-        chef:  coffeeUpdate.chef,
-        supplier: coffeeUpdate.supplier,
-        details: coffeeUpdate.details,
-        teste: coffeeUpdate.teste,
-        category: coffeeUpdate.category,
-        photo_url: coffeeUpdate.photo_url,
-        price: coffeeUpdate.price
+        $set: {
+          name: coffeeUpdate.name,
+          chef: coffeeUpdate.chef,
+          supplier: coffeeUpdate.supplier,
+          details: coffeeUpdate.details,
+          taste: coffeeUpdate.taste,
+          category: coffeeUpdate.category,
+          photo_Url: coffeeUpdate.photo_Url,
+          price: coffeeUpdate.price
+        }
       }
-      const UpdateDoc = await coffeeInfoCollections.updateOne(query, doc)
-      res.send(UpdateDoc)
+      const result = await coffeeInfoCollections.updateOne(query, doc)
+      res.send(result)
     })
 
 
