@@ -2,7 +2,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require("dotenv").config();
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -25,15 +24,16 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-
     const coffeeInfoCollections = client.db("coffee_store").collection("coffee");
+    const usersCollections = client.db("coffee_store").collection("users");
 
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // json data get
+    app.get("/coffee", async (req, res) => {
+      const result = await coffeeInfoCollections.find().toArray()
+      res.send(result)
+    })
 
-    app.get('/coffee', async (req, res) => {
-      const result = await coffeeInfoCollections.find().toArray();
-      res.send(result);
-    });
 
     app.get("/coffee/:id", async (req, res) => {
       const id = req.params.id;
@@ -55,13 +55,10 @@ async function run() {
       res.send(result)
     })
 
-
-    app.get('/users', async(req, res)=>{
+    app.get('/users', async (req, res) => {
       const result = await usersCollections.find().toArray()
       res.send(result)
     })
-
-
 
     app.post('/users', async (req, res) => {
       const data = req.body;
@@ -69,7 +66,19 @@ async function run() {
       res.send(result)
     })
 
-    
+    app.patch('/users', async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const query = { email: user.email }
+      const update = {
+        $set: {
+          lastSignInTime: user.lastSignInTime
+        }
+      }
+      const result = await usersCollections.updateOne(query, update)
+      res.send(result)
+    })
+
 
     app.patch("/update_coffee/:id", async (req, res) => {
       const id = req.params.id;
@@ -98,7 +107,7 @@ async function run() {
   }
 }
 
-run(); // No .catch(console.dir) needed
+run().catch(console.dir);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
