@@ -55,6 +55,22 @@ async function run() {
       res.send(result)
     })
 
+
+    app.get('/users', async(req, res)=>{
+      const result = await usersCollections.find().toArray()
+      res.send(result)
+    })
+
+
+
+    app.post('/users', async (req, res) => {
+      const data = req.body;
+      const result = await usersCollections.insertOne(data);
+      res.send(result)
+    })
+
+    
+
     app.patch("/update_coffee/:id", async (req, res) => {
       const id = req.params.id;
       const coffeeUpdate = req.body;
